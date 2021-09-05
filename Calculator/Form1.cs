@@ -14,10 +14,10 @@ namespace Calculator
     {
         private double result = 0;
         private string display = "0";
-        private char operation;
+        private char operation = '0';
         private double num1 = 0;
         private double num2 = 0;
-        private int count = 0;
+        private bool check = true;
 
         public Form1()
         {
@@ -26,8 +26,18 @@ namespace Calculator
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string init = this.display;
+            string init = display;
             Display.Text = init;
+        }
+
+        private void Empty_Varience ()
+        {
+            result = 0;
+            display = "0";
+            operation = '0';
+            num1 = 0;
+            num2 = 0;
+            check = true;
         }
 
         private void Do_Expression ()
@@ -47,13 +57,71 @@ namespace Calculator
                     result = num1 / num2;
                     break;
             }
+            num1 = 0;
+            num2 = 0;
+            operation = '0';
         }
 
         private void Expression_Click(object sender, EventArgs e)
         {
             string button = (sender as Button).Text;
 
-            if (this.count == 0)
+
+            if (button.Equals("-") && Display.Text.Equals("0"))
+            {
+                Display.Text = "-";
+            } else
+            {
+                if (num1 == 0 && result != 0)
+                {
+                    num1 = result;
+                    result = 0;
+                    check = false;
+                }
+
+                if (check)
+                {
+                    num1 = Double.Parse(display);
+                    check = false;
+                }
+                else
+                {
+                    num2 = Double.Parse(display);
+                    Do_Expression();
+                    check = true;
+                }
+
+                if (operation != '0')
+                {
+                    return;
+                }
+
+                if (button.Equals("AC") || button.Equals("="))
+                {
+                    if (button.Equals("AC"))
+                    {
+                        Empty_Varience();
+                        Display.Text = result.ToString();
+                    }
+                    else
+                    {
+                        if (result == 0)
+                        {
+                            Display.Text = num1.ToString();
+                        }
+                        else
+                        {
+                            Display.Text = result.ToString();
+                        }
+                    }
+                } else
+                {
+                    operation = button[0];
+                    Display.Text = "0";
+                }
+            }
+
+            /*if (this.count == 0)
             {
                 if (result != 0)
                 {
@@ -98,6 +166,7 @@ namespace Calculator
                 this.operation = button[0];
                 Display.Text = "0";
             }
+            */
         }
 
         private void Number_Click(object sender, EventArgs e)
@@ -126,6 +195,9 @@ namespace Calculator
             } else if(!number.Equals("DEL"))
             {
                 this.display += number;
+            } else if ((number.Equals("00") || number.Equals("0")) && display.Equals("-"))
+            {
+                return;
             }
             Display.Text = this.display;
         }
